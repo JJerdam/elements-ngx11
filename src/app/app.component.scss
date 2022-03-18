@@ -1,0 +1,52 @@
+.form-container {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 1.2em;
+    form {
+        width: 30em;
+        padding: 5px;
+    }
+}
+
+.form-group {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+
+    button, input, textarea {
+        max-width: 100%;
+        font-size: 1.2em;
+    }
+
+    input, textarea {
+        padding: 10px 5px; 
+    }
+
+    label {
+        margin-bottom: 5px;
+    }
+
+    button {
+        background-color: transparent;
+        padding: 10px;
+        border: 1px solid #000;
+        &:hover {
+            cursor: pointer;
+            background-color: #000;
+            color: white;
+        }
+    }
+
+    textarea {
+        resize: none;
+    }
+}
+
+.msg-success {
+    color: green;
+    font-weight: bold;
+    text-align: center;
+}
