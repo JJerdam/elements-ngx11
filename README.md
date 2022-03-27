@@ -1,27 +1,81 @@
-# ElementsNgx11
+# Installation
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.1.2.
+`npm install`
 
-## Development server
+# Build
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+`npm run build:app`
 
-## Code scaffolding
+This project uses `build-elements.js` script that will merge generated `.js` files into one:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```js
+const fs = require('fs-extra');
+const concat = require('concat');
 
-## Build
+const appName = "elements-ngx11";
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+const buildElement = async () => {
+    const files = [
+        `./dist/${appName}/polyfills.js`, 
+        `./dist/${appName}/scripts.js`
+    ]
+    await fs.ensureDir('elements');
+    await concat(files, 'elements/vendor.js');
+    fs.copyFile(`./dist/${appName}/main.js`, 'elements/my-form.js');
+}
 
-## Running unit tests
+buildElement().then(() => {
+    console.log("File created")
+});
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+This will ensure that `elements` directory exists, and put generated script there.
 
-## Running end-to-end tests
+# Run
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+Open `index.html` file in a browser.
 
-## Further help
+# Additional info
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+This example uses `ngx-build-plus` as a builder. It's set up in `angular.json` file:
+
+```json
+      "architect": {
+        "build": {
+          "builder": "ngx-build-plus:browser",
+          "options": {
+            "outputPath": "dist/elements-ngx11",
+            "index": "src/index.html",
+```
+
+It uses additional webpack configuration to extract angular dependencies from a component itself:
+
+`webpack.externals.js` :
+
+```js
+module.exports = {
+    "externals": {
+        "rxjs": "rxjs",
+        "@angular/core": "ng.core",
+        "@angular/common": "ng.common",
+        "@angular/platform-browser": "ng.platformBrowser",
+        "@angular/elements": "ng.elements",
+        "@angular/forms": "ng.forms"
+    }
+}
+```
+
+Extracted scripts have to be provided in `scripts` array in `angular.json` : 
+
+```json
+...
+            "scripts": [
+              "node_modules/rxjs/bundles/rxjs.umd.js",
+              "node_modules/@angular/core/bundles/core.umd.js",
+              "node_modules/@angular/common/bundles/common.umd.js",
+              "node_modules/@angular/elements/bundles/elements.umd.js",
+              "node_modules/@angular/platform-browser/bundles/platform-browser.umd.js",
+              "node_modules/@angular/forms/bundles/forms.umd.js"
+            ]
+...
+```
